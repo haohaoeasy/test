@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="../css/font-awesome.css">
+    <link rel="stylesheet" href="../css/css.css">
+</head>
+<body>
+<h3 class="playerTitle">视频播放器</h3>
+<div class="player">
+    <video src="../mp4/chrome.mp4"></video>
+    <div class="controls">
+        <a href="javascript:;" class="switch fa fa-play"></a>
+        <a href="javascript:;" class="expand fa fa-expand"></a>
+
+        <div class="progress">
+            <div class="bar"></div>
+            <div class="loaded"></div>
+            <div class="elapse"></div>
+        </div>
+        <div class="time">
+            <span class="currentTime">00:00:00</span>
+            \
+            <span class="totalTime">00:00:00</span>
+        </div>
+    </div>
+</div>
+<script src="../js/jquery.min.js"></script>
+<script>
+    $(function () {
+        var video = $("video")[0];
+        $(".switch").click(function () {
+            if (video.paused) {
+                video.play();
+            } else {
+                video.paused();
+            }
+            $(this).toggleClass("fa-play  fa-paused");
+        });
+        $(".expand").click(function () {
+            if (video.requestFullScreen) {
+                video.requestFullScreen();
+            }
+            else if (video.webkitRequestFullScreen) {
+                video.webkitRequestFullScreen();
+            }
+            else if (video.mozRequestFullScreen) {
+                video.mozRequestFullScreen();
+            }
+            else if (video.msRequestFullScreen) {
+                video.msRequestFullScreen();
+            }
+        });
+        video.oncanplay = function () {
+            setTimeout(function () {
+                video.style.display = "block";
+                var total = video.duration;
+                var result = getResult(total);
+                $(".totalTime").html(result);
+            })
+        }
+        function getResult(time) {
+            var hour = Math.floor(time / 3600);
+            hour = hour < 10 ? "0" + hour : hour;
+            var minute = Math.floor(time%3600/60);
+            minute = minute<10?"0"+minute:minute;
+            var second = Math.floor(time%60);
+            second = second<10?"0"+second:second;
+            return hour+":"+minute+":"+second;
+        }
+        video.ontimeupdate = function(){
+            var current = video.currentTime;
+            var result = getResult(current);
+            $(".currentTime").html(result);
+            var percent = current/video.duration*100+"%";
+            $(".elapse").css("width",percent);
+        }
+        $(".bar").click(function(e){
+            var offset = e.offsetX;
+            var percent = offset/$(this).width();
+            var current = percent*video.duration;
+            video. currentTime = current;
+        })
+        video.onloadend = function(){
+            video.currentTime = 0;
+            $(".switch").removeClass("fa-pause").addClass("fa-play");
+        }
+    });
+</script>
+</body>
+</html>
